@@ -9,23 +9,27 @@ export interface TokenPayload {
 }
 
 export const generateAccessToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, config.jwt.accessSecret, {
-    expiresIn: config.jwt.accessExpiry,
-  });
+  const secret: jwt.Secret = config.jwt.accessSecret;
+  const options: jwt.SignOptions = {
+    expiresIn: config.jwt.accessExpiry as jwt.SignOptions['expiresIn'],
+  };
+
+  return jwt.sign(payload, secret, options);
 };
 
 export const generateRefreshToken = (userId: number): string => {
-  return jwt.sign(
-    { userId, tokenType: 'refresh' },
-    config.jwt.refreshSecret,
-    { expiresIn: config.jwt.refreshExpiry }
-  );
+  const secret: jwt.Secret = config.jwt.refreshSecret;
+  const options: jwt.SignOptions = {
+    expiresIn: config.jwt.refreshExpiry as jwt.SignOptions['expiresIn'],
+  };
+
+  return jwt.sign({ userId, tokenType: 'refresh' }, secret, options);
 };
 
 export const verifyAccessToken = (token: string): TokenPayload => {
-  return jwt.verify(token, config.jwt.accessSecret) as TokenPayload;
+  return jwt.verify(token, config.jwt.accessSecret as jwt.Secret) as TokenPayload;
 };
 
 export const verifyRefreshToken = (token: string): { userId: number } => {
-  return jwt.verify(token, config.jwt.refreshSecret) as { userId: number };
+  return jwt.verify(token, config.jwt.refreshSecret as jwt.Secret) as { userId: number };
 };
